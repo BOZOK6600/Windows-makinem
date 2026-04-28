@@ -22,7 +22,7 @@ jobs:
       - name: Baglan ve Adres Ver
         run: |
           Start-Process -FilePath ".\ngrok\ngrok.exe" -ArgumentList "tcp 3389"
-          Start-Sleep -Seconds 20
+          Start-Sleep -Seconds 40
           $response = Invoke-RestMethod -Uri http://localhost:4040/api/tunnels
           $url = $response.tunnels[0].public_url
           echo "===================================="
