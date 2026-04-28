@@ -11,7 +11,7 @@ jobs:
           Expand-Archive ngrok.zip
           .\ngrok\ngrok.exe authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
-      - name: RDP ve Kullanici (Hata Alsa Bile Devam Et)
+      - name: RDP ve Kullanici
         continue-on-error: true
         run: |
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -19,15 +19,16 @@ jobs:
           net user runneradmin Sifre123456! /add
           net localgroup administrators runneradmin /add
 
-      - name: Baglan ve Adres Ver
+      - name: Baglan
         run: |
           Start-Process -FilePath ".\ngrok\ngrok.exe" -ArgumentList "tcp 3389"
-          Start-Sleep -Seconds 40
+          Write-Host "Baglanti kuruluyor, 60 saniye bekle..."
+          Start-Sleep -Seconds 60
           $response = Invoke-RestMethod -Uri http://localhost:4040/api/tunnels
           $url = $response.tunnels[0].public_url
-          echo "===================================="
-          echo "ADRES: $url"
-          echo "KULLANICI: runneradmin"
-          echo "SIFRE: Sifre123456!"
-          echo "===================================="
+          Write-Host "`n`n===================================="
+          Write-Host "ADRES: $url"
+          Write-Host "KULLANICI: runneradmin"
+          Write-Host "SIFRE: Sifre123456!"
+          Write-Host "===================================="
           Start-Sleep -Seconds 21600
