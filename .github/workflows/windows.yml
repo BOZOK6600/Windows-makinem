@@ -1,12 +1,32 @@
-name: Windows-VM
+name: Windows-RDP
 on: workflow_dispatch
 
 jobs:
-  run-windows:
+  build:
     runs-on: windows-latest
     steps:
-      - name: Merhaba De
+      - name: Ngrok Yukle
         run: |
-          echo "Windows Makinesi Baslatildi!"
-          systeminfo
+          Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+          Expand-Archive ngrok.zip
+      - name: Ngrok Auth
+        run: .\ngrok\ngrok.exe authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+      - name: RDP ve Kullanici Hazirla
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          net user runneradmin Sifre123456! /add
+          net localgroup administrators runneradmin /add
+      - name: Baglantiyi Baslat
+        run: Start-Process -FilePath ".\ngrok\ngrok.exe" -ArgumentList "tcp 3389"
+      - name: Baglanti Bilgilerini Gor
+        run: |
+          $response = Invoke-RestMethod -Uri http://localhost:4040/api/tunnels
+          $url = $response.tunnels[0].public_url
+          echo "===================================="
+          echo "BAGLANTI ADRESI: $url"
+          echo "KULLANICI ADI: runneradmin"
+          echo "SIFRE: Sifre123456!"
+          echo "===================================="
+          Start-Sleep -Seconds 21600
           
