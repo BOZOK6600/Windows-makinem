@@ -1,0 +1,12 @@
+name: Windows-VM
+on: workflow_dispatch
+
+jobs:
+  run-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Merhaba De
+        run: |
+          echo "Windows Makinesi Baslatildi!"
+          systeminfo
+          
