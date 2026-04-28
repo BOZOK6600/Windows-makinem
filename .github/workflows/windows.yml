@@ -15,21 +15,31 @@ jobs:
         continue-on-error: true
         run: |
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
-          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
           net user runneradmin Sifre123456! /add
           net localgroup administrators runneradmin /add
 
       - name: Baglan
         run: |
           Start-Process -FilePath ".\ngrok\ngrok.exe" -ArgumentList "tcp 3389"
-          Write-Host "Ngrok baslatiliyor, 90 saniye bekle..."
-          Start-Sleep -Seconds 90
-          $response = Invoke-RestMethod -Uri http://localhost:4040/api/tunnels
-          $url = $response.tunnels[0].public_url
-          Write-Host "`n`n===================================="
-          Write-Host "ADRES: $url"
-          Write-Host "KULLANICI: runneradmin"
-          Write-Host "SIFRE: Sifre123456!"
-          Write-Host "===================================="
-          Start-Sleep -Seconds 21600
+          Write-Host "Adres araniyor..."
+          $n = 0
+          while ($n -lt 20) {
+            try {
+              $response = Invoke-RestMethod -Uri http://localhost:4040/api/tunnels
+              $url = $response.tunnels[0].public_url
+              if ($url) {
+                Write-Host "`n`n===================================="
+                Write-Host "ADRES: $url"
+                Write-Host "KULLANICI: runneradmin"
+                Write-Host "SIFRE: Sifre123456!"
+                Write-Host "===================================="
+                Start-Sleep -Seconds 21600
+                break
+              }
+            } catch {
+              Write-Host "Henuz hazir degil, bekleniyor... ($n)"
+              Start-Sleep -Seconds 10
+              $n++
+            }
+          }
           
