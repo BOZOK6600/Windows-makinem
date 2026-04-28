@@ -22,8 +22,8 @@ jobs:
       - name: Baglan
         run: |
           Start-Process -FilePath ".\ngrok\ngrok.exe" -ArgumentList "tcp 3389"
-          Write-Host "Baglanti kuruluyor, 60 saniye bekle..."
-          Start-Sleep -Seconds 60
+          Write-Host "Ngrok baslatiliyor, 90 saniye bekle..."
+          Start-Sleep -Seconds 90
           $response = Invoke-RestMethod -Uri http://localhost:4040/api/tunnels
           $url = $response.tunnels[0].public_url
           Write-Host "`n`n===================================="
@@ -32,3 +32,4 @@ jobs:
           Write-Host "SIFRE: Sifre123456!"
           Write-Host "===================================="
           Start-Sleep -Seconds 21600
+          
